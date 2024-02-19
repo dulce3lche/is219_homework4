@@ -1,6 +1,8 @@
 # conftest.py
-import pytest
+"""Module docstring: This module configures pytest options and generates test data for the calculator app."""
+
 from decimal import Decimal
+import pytest # used to run pytest's
 from faker import Faker
 from calculator.operations import add, subtract, multiply, divide
 
@@ -12,19 +14,19 @@ def generate_test_data(num_records):
         'add': add,
         'subtract': subtract,
         'multiply': multiply,
-        'divide': divide
+        'divide': divide,
     }
+
     # Generate test data
     for _ in range(num_records):
         a = Decimal(fake.random_number(digits=2))
         b = Decimal(fake.random_number(digits=2)) if _ % 4 != 3 else Decimal(fake.random_number(digits=1))
         operation_name = fake.random_element(elements=list(operation_mappings.keys()))
         operation_func = operation_mappings[operation_name]
-        
+
         # Ensure b is not zero for divide operation to prevent division by zero in expected calculation
         if operation_func == divide:
             b = Decimal('1') if b == Decimal('0') else b
-        
         try:
             if operation_func == divide and b == Decimal('0'):
                 expected = "ZeroDivisionError"
@@ -32,7 +34,7 @@ def generate_test_data(num_records):
                 expected = operation_func(a, b)
         except ZeroDivisionError:
             expected = "ZeroDivisionError"
-        
+
         yield a, b, operation_name, operation_func, expected
 
 def pytest_addoption(parser):
