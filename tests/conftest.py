@@ -9,6 +9,10 @@ from calculator.operations import add, subtract, multiply, divide
 fake = Faker()
 
 def generate_test_data(num_records):
+    """
+    Generates test for num records generating num records with 2 decimal numbers 
+    
+    """
     # Define operation mappings for both Calculator and Calculation tests
     operation_mappings = {
         'add': add,
@@ -38,9 +42,17 @@ def generate_test_data(num_records):
         yield a, b, operation_name, operation_func, expected
 
 def pytest_addoption(parser):
+    """ 
+    Used to add a custom command line to pytest, allowing you to extend the function pytest 
+    
+    """
     parser.addoption("--num_records", action="store", default=5, type=int, help="Number of test records to generate")
 
 def pytest_generate_tests(metafunc):
+    """
+    Generates random generated tests num records based on command line option
+    
+    """
     # Check if the test is expecting any of the dynamically generated fixtures
     if {"a", "b", "expected"}.intersection(set(metafunc.fixturenames)):
         num_records = metafunc.config.getoption("num_records")
