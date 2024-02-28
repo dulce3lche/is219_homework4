@@ -1,7 +1,11 @@
+"""
+This module contains pytest tests for the calculate_and_print function in the main module.
+It tests various scenarios including different arithmetic operations, division by zero,
+unknown operations, and invalid number inputs.
+"""
 import pytest
 from main import calculate_and_print  # Ensure this import matches your project structure
 
-# Parameterize the test function to cover different operations and scenarios, including errors
 @pytest.mark.parametrize("a_string, b_string, operation_string, expected_string", [
     ("5", "3", 'add', "The result of 5 add 3 is equal to 8"),
     ("10", "2", 'subtract', "The result of 10 subtract 2 is equal to 8"),
@@ -13,6 +17,18 @@ from main import calculate_and_print  # Ensure this import matches your project 
     ("5", "b", 'subtract', "Invalid number input: 5 or b is not a valid number.")  # Testing another invalid number input
 ])
 def test_calculate_and_print(a_string, b_string, operation_string,expected_string, capsys):
+    """
+    Tests the calculate_and_print function with various inputs and expected outputs.
+
+    Parameters:
+    - a_string (str): The first operand as a string.
+    - b_string (str): The second operand as a string.
+    - operation_string (str): The operation to perform.
+    - expected_string (str): The expected output string.
+    - capsys: Pytest fixture for capturing sys.stdout and sys.stderr.
+
+    Asserts that the output of calculate_and_print matches the expected output for each set of parameters.
+    """
     calculate_and_print(a_string, b_string, operation_string)
     captured = capsys.readouterr()
     assert captured.out.strip() == expected_string

@@ -1,14 +1,26 @@
 # conftest.py
 """Module docstring: This module configures pytest options and generates test data for the calculator app."""
-
+# Import pytest for writing test cases.
 from decimal import Decimal
-import pytest # used to run pytest's
+import pytest # used to run pytest's pylint: disable=unused-import
 from faker import Faker
 from calculator.operations import add, subtract, multiply, divide
 
 fake = Faker()
 
 def generate_test_data(num_records):
+    """
+    Generates test data for a specified number of records. Each record consists of two numbers
+    and an arithmetic operation (add, subtract, multiply, divide), along with the expected result
+    of applying the operation to those numbers.
+
+    Parameters:
+    - num_records (int): The number of test records to generate.
+
+    Yields:
+    - tuple: Each containing two Decimal numbers (a, b), an operation name (as a string),
+      the operation function (callable), and the expected result (Decimal or string in case of an error).
+    """
     # Define operation mappings for both Calculator and Calculation tests
     operation_mappings = {
         'add': add,
@@ -25,10 +37,10 @@ def generate_test_data(num_records):
         operation_func = operation_mappings[operation_name]
 
         # Ensure b is not zero for divide operation to prevent division by zero in expected calculation
-        if operation_func == divide:
+        if operation_func == divide: # pylint: disable=comparison-with-callable
             b = Decimal('1') if b == Decimal('0') else b
         try:
-            if operation_func == divide and b == Decimal('0'):
+            if operation_func == divide and b == Decimal('0'): # pylint: disable=comparison-with-callable
                 expected = "ZeroDivisionError"
             else:
                 expected = operation_func(a, b)
@@ -38,9 +50,22 @@ def generate_test_data(num_records):
         yield a, b, operation_name, operation_func, expected
 
 def pytest_addoption(parser):
+    """
+    Generates pytest N number of records when you enter a command of pytest --num_records=N.
+    """
     parser.addoption("--num_records", action="store", default=5, type=int, help="Number of test records to generate")
 
 def pytest_generate_tests(metafunc):
+    """
+    Dynamically generate tests based on the `--num_records` command-line option.
+    
+    This hook is called by pytest to parameterize tests. It reads the number of records specified 
+    by the `--num_records` command-line option and generates test data accordingly, allowing 
+    parameterized tests to run with a dynamic set of inputs.
+    
+    Parameters:
+    - metafunc (Metafunc): The metafunc object for the test function to be parameterized.
+    """
     # Check if the test is expecting any of the dynamically generated fixtures
     if {"a", "b", "expected"}.intersection(set(metafunc.fixturenames)):
         num_records = metafunc.config.getoption("num_records")
